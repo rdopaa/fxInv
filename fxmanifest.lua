@@ -4,10 +4,9 @@ game 'gta5'
 
 author 'fxDopa'
 
-description 'Command Stream for Users'
+description 'fxDopa'
 
 server_scripts {
-    "main.lua",
-    "config.lua"
+    "server.lua"
 }
 lua54 'yes'
