@@ -43,6 +43,8 @@ AddEventHandler('playerDropped', function(reason)
         if #inventory > 0 then
             exports.ox_inventory:CustomDrop('Loot Drop', inventory, deathCoords[source])
         end
+            
+        exports.ox_inventory:ClearInventory(source, false)
         --print("Created Drop Loot"..deathCoords[source])
         deathCoords[source] = nil
     end
