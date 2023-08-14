@@ -11,7 +11,9 @@ AddEventHandler('esx:onPlayerDeath', function(data)
     if xPlayer then
         deathCoords[source] = xPlayer.getCoords(true)
         isDeadly = true
-        --print(deathCoords[source])
+        if Config.Debug then
+            print(deathCoords[source])
+        end
     end
 end)
 
@@ -45,7 +47,10 @@ AddEventHandler('playerDropped', function(reason)
         end
             
         exports.ox_inventory:ClearInventory(source, false)
-        --print("Created Drop Loot"..deathCoords[source])
+    
+        if Config.Debug then
+            print("Created Drop Loot"..deathCoords[source])
+        end
         deathCoords[source] = nil
     end
 end)
