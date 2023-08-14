@@ -7,6 +7,7 @@ author 'fxDopa'
 description 'fxDopa'
 
 server_scripts {
+    "config.lua",
     "server.lua"
 }
 lua54 'yes'
