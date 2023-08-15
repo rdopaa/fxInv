@@ -43,7 +43,7 @@ AddEventHandler('playerDropped', function(reason)
         end
 
         if #inventory > 0 then
-            exports.ox_inventory:CustomDrop('Loot Drop', inventory, deathCoords[source])
+            exports.ox_inventory:CustomDrop(Config.NameLoot, inventory, deathCoords[source])
         end
             
         exports.ox_inventory:ClearInventory(source, false)
