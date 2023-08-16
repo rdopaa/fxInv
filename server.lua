@@ -51,6 +51,8 @@ AddEventHandler('playerDropped', function(reason)
         if Config.Debug then
             print("Created Drop Loot"..deathCoords[source])
         end
-        deathCoords[source] = nil
+
+        isDeadly = false -- RESET FIX
+        deathCoords[source] = nil -- RESET FIX
     end
 end)
