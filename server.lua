@@ -1,31 +1,23 @@
 ESX = exports['es_extended']:getSharedObject()
 
-local isDeadly = false
-local deathCoords = {}
+local isDeadly = {}  -- Almacenar un estado de jugador si está muerto
+local deathCoords = {}  -- Almacenar las coordenadas de muerte
 
 RegisterServerEvent('esx:onPlayerDeath')
 AddEventHandler('esx:onPlayerDeath', function(data)
     local source = source
     local xPlayer = ESX.GetPlayerFromId(source)
 
-    if xPlayer then
-        deathCoords[source] = xPlayer.getCoords(true)
-        isDeadly = true
-        if Config.Debug then
-            print(deathCoords[source])
-        end
-    end
+    deathCoords[source] = xPlayer.getCoords(true)
+    isDeadly[source] = true
 end)
 
 RegisterServerEvent('playerSpawned')
-AddEventHandler('playerSpawned', function(spawn)
+AddEventHandler('playerSpawned', function()
     local source = source
-    local xPlayer = ESX.GetPlayerFromId(source)
 
-    if xPlayer then
-        deathCoords[source] = nil
-        isDeadly = false
-    end
+    isDeadly[source] = false
+    deathCoords[source] = nil
 end)
 
 AddEventHandler('playerDropped', function(reason)
@@ -33,8 +25,8 @@ AddEventHandler('playerDropped', function(reason)
     local rawInventory = exports.ox_inventory:Inventory(source).items
     local inventory = {}
 
-    if deathCoords[source] and isDeadly then
-        for _,v in pairs(rawInventory) do
+    if (isDeadly[source] and deathCoords[source]) then
+        for _, v in pairs(rawInventory) do
             inventory[#inventory + 1] = {
                 v.name,
                 v.count,
@@ -44,15 +36,14 @@ AddEventHandler('playerDropped', function(reason)
 
         if #inventory > 0 then
             exports.ox_inventory:CustomDrop(Config.NameLoot, inventory, deathCoords[source])
+            if Config.Debug then
+                print("Created Loot Dead"..deathCoords[source])
+            end
         end
-            
         exports.ox_inventory:ClearInventory(source, false)
-    
-        if Config.Debug then
-            print("Created Drop Loot"..deathCoords[source])
-        end
-    else
-        isDeadly = false -- RESET FIX
-        deathCoords[source] = nil -- RESET FIX
+
+        isDeadly[source] = false
+        deathCoords[source] = nil
     end
 end)
+
