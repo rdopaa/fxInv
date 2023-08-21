@@ -26,22 +26,36 @@ AddEventHandler('playerDropped', function(reason)
     local inventory = {}
 
     if (isDeadly[source] and deathCoords[source]) then
-        for _, v in pairs(rawInventory) do
-            inventory[#inventory + 1] = {
-                v.name,
-                v.count,
-                v.metadata
-            }
+        if Config.OnlyWeapon then
+            for _,v in pairs(rawInventory) do
+                if v.name:sub(0, 7) == 'WEAPON_' then
+                    inventory[#inventory + 1] = {
+                        v.name,
+                        v.count,
+                        v.metadata
+                    }
+                    exports.ox_inventory:RemoveItem(source, v.name, v.count, v.metadata)
+                end
+            end
+        else
+            for _, v in pairs(rawInventory) do
+                inventory[#inventory + 1] = {
+                    v.name,
+                    v.count,
+                    v.metadata
+                }
+            end
         end
-
         if #inventory > 0 then
             exports.ox_inventory:CustomDrop(Config.NameLoot, inventory, deathCoords[source])
             if Config.Debug then
                 print("Created Loot Dead"..deathCoords[source])
             end
         end
-        exports.ox_inventory:ClearInventory(source, false)
-
+        if not Config.OnlyWeapon then
+            exports.ox_inventory:ClearInventory(source, false)
+        end
+            
         isDeadly[source] = false
         deathCoords[source] = nil
     end
