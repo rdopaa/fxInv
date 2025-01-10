@@ -1,9 +1,7 @@
-# fxInv
-Lost Inventory if you disconnect dead
+# FX_INV
+Lose your inventory if you disconnect while dead.
 
-To prevents noobs. Only Server.
-
-LAST UPDATE:
-21/08
-
-**PLEASE INSTALL THE LATEST RELEASE**
+Prevents exploits. Server-side only.
+--------------------------
+Last Update: 10/01/2025
+**Ensure you're using the latest release!**
