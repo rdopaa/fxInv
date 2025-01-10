@@ -1,63 +1,57 @@
 ESX = exports['es_extended']:getSharedObject()
 
-local isDeadly = {}  -- Almacenar un estado de jugador si está muerto
-local deathCoords = {}  -- Almacenar las coordenadas de muerte
+local playerStates = {}
 
 RegisterServerEvent('esx:onPlayerDeath')
 AddEventHandler('esx:onPlayerDeath', function(data)
-    local source = source
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local _source = source
+    local xPlayer = ESX.GetPlayerFromId(_source)
 
-    deathCoords[source] = xPlayer.getCoords(true)
-    isDeadly[source] = true
-end)
-
-RegisterServerEvent('playerSpawned')
-AddEventHandler('playerSpawned', function()
-    local source = source
-
-    isDeadly[source] = false
-    deathCoords[source] = nil
-end)
-
-AddEventHandler('playerDropped', function(reason)
-    local source = source
-    local rawInventory = exports.ox_inventory:Inventory(source).items
-    local inventory = {}
-
-    if (isDeadly[source] and deathCoords[source]) then
-        if Config.OnlyWeapon then
-            for _,v in pairs(rawInventory) do
-                if v.name:sub(0, 7) == 'WEAPON_' then
-                    inventory[#inventory + 1] = {
-                        v.name,
-                        v.count,
-                        v.metadata
-                    }
-                    exports.ox_inventory:RemoveItem(source, v.name, v.count, v.metadata)
-                end
-            end
-        else
-            for _, v in pairs(rawInventory) do
-                inventory[#inventory + 1] = {
-                    v.name,
-                    v.count,
-                    v.metadata
-                }
-            end
-        end
-        if #inventory > 0 then
-            exports.ox_inventory:CustomDrop(Config.NameLoot, inventory, deathCoords[source])
-            if Config.Debug then
-                print("Created Loot Dead"..deathCoords[source])
-            end
-        end
-        if not Config.OnlyWeapon then
-            exports.ox_inventory:ClearInventory(source, false)
-        end
-            
-        isDeadly[source] = false
-        deathCoords[source] = nil
+    if xPlayer then
+        playerStates[_source] = {
+            is_dead = true,
+            coords = xPlayer.getCoords(true)
+        }
     end
 end)
 
+RegisterServerEvent('playerDropped')
+AddEventHandler('playerDropped', function(data, reason)
+    local _source = source
+    local xPlayer = ESX.GetPlayerFromId(_source)
+    local state = playerStates[_source]
+
+    if state and state.is_dead == true then
+        if Config.Debug then
+            print("Player is dead, processing inventory drop.")
+        end
+
+        local rawInventory = exports.ox_inventory:Inventory(_source).items
+        local inventory = {}
+
+        for _, v in pairs(rawInventory) do
+            if Config.OnlyWeapon and v.name:sub(1, 7) == 'WEAPON_' then
+                table.insert(inventory, { v.name, v.count, v.metadata })
+                exports.ox_inventory:RemoveItem(_source, v.name, v.count, v.metadata)
+            elseif not Config.OnlyWeapon then
+                table.insert(inventory, { v.name, v.count, v.metadata })
+            end
+        end
+
+        -- Crear el drop si hay ítems en el inventario
+        if #inventory > 0 then
+            exports.ox_inventory:CustomDrop('Dead Loot', inventory, state.coords)
+            if Config.Debug then
+                print("Quit drop loot created in: " .. state.coords)
+            end
+        end
+
+        -- Limpiar el inventario si no es solo armas
+        if not Config.OnlyWeapon then
+            exports.ox_inventory:ClearInventory(_source, false)
+        end
+    end
+
+    -- Limpiar estado del jugador
+    playerStates[_source] = nil
+end)
