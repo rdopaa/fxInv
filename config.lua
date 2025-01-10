@@ -1,6 +1,6 @@
 Config = {} or Config
 
-Config.Debug = true
-Config.NameLoot = 'Drop Loot' --- Name for Loot in OX
+Config.Debug = true --- Only for Dev Mode
+Config.NameLoot = 'Drop Loot' --- Name loot in the ground
 
-Config.OnlyWeapon = false --- DEFAULT: FALSE
+Config.OnlyWeapon = false --- Default: False
