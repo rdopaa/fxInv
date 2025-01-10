@@ -38,7 +38,6 @@ AddEventHandler('playerDropped', function(data, reason)
             end
         end
 
-        -- Crear el drop si hay ítems en el inventario
         if #inventory > 0 then
             exports.ox_inventory:CustomDrop('Dead Loot', inventory, state.coords)
             if Config.Debug then
@@ -46,12 +45,10 @@ AddEventHandler('playerDropped', function(data, reason)
             end
         end
 
-        -- Limpiar el inventario si no es solo armas
         if not Config.OnlyWeapon then
             exports.ox_inventory:ClearInventory(_source, false)
         end
     end
 
-    -- Limpiar estado del jugador
     playerStates[_source] = nil
 end)
